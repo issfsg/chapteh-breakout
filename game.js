@@ -87,7 +87,6 @@ function movePaddle() {
 }
 
 function initBricks() {
-	// http://stackoverflow.com/questions/966225/how-can-i-create-a-two-dimensional-array-in-javascript
 	brick = new Array(bricks.column);
 
 	for( i = 0; i < bricks.column; i++ ) {
