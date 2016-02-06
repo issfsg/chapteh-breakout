@@ -253,6 +253,3 @@ function init() {
 initBricks();
 init();
 initSpacebar();
-
-
-
