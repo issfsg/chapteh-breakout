@@ -88,6 +88,7 @@ body {
 	background: #fff url('img/heart.png') no-repeat top left;
 	background-size: 24px auto;
 	transition: all 0.4s ease;
+	-webkit-transition: all 0.4s ease;
 } 
 .heart-o {
 	background: #fff url('img/heart.png') no-repeat 0 -23px;
