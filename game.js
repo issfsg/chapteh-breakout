@@ -185,7 +185,7 @@ function loseTurnCallback() {
 	$('.life .heart').eq(setting.deathNumber).addClass('heart-o');
 	
 	setTimeout(function(e){ 
-		$('.instr-footer small').text('Press spacebar to restart the game.');
+		$('.instr-footer small').text('Press any key to restart the game.');
 		setting.deathNumber += 1;
 
 		x = canvasWidth/2; 
