@@ -87,7 +87,6 @@ function movePaddle() {
 }
 
 function initBricks() {
-	// http://stackoverflow.com/questions/966225/how-can-i-create-a-two-dimensional-array-in-javascript
 	brick = new Array(bricks.column);
 
 	for( i = 0; i < bricks.column; i++ ) {
@@ -185,7 +184,7 @@ function loseTurnCallback() {
 	$('.life .heart').eq(setting.deathNumber).addClass('heart-o');
 	
 	setTimeout(function(e){ 
-		$('.instr-footer small').text('Press spacebar to restart the game.');
+		$('.instr-footer small').text('Press any key to restart the game.');
 		setting.deathNumber += 1;
 
 		x = canvasWidth/2; 
