@@ -18,6 +18,7 @@ body {
 }
 #breakout-game {
 	background: #eee;
+
 }
 .modal-overlay {
 	position: fixed;
@@ -52,6 +53,11 @@ body {
 	color: #111;
 	margin-bottom: 0.15em;
 	letter-spacing: -2px;
+}
+.modal-score {
+	margin-bottom: 15px;
+	font-size: 24px;
+	color: #444;
 }
 .btn-play-again {
 	background: #114357;

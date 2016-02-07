@@ -26,6 +26,7 @@ var setting = {
 	deathTotal: 2,
 
 	lostMessage: "You've lost the game. Would you like to play again?",
+	wonMessage: "You've beaten the game. Would you like to improve on your score?",
 
 	currentScore: 0,
 	brickScore: 20,
@@ -44,7 +45,8 @@ var bricks = {
 	padding	: 2
 };
 
-var gameStart, brick, restart; 
+var gameStart, brick, restart, 
+	totalBricks = bricks.row * bricks.column;
 
 function drawBall() {
 	context.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -141,6 +143,7 @@ function brickCollision() {
 					currentBrick.state = false;
 					setting.currentScore += setting.brickScore;
 					$('.instr').text('Score : ' + setting.currentScore);
+					totalBricks -= 1;
 				}
 			}
 		}
@@ -197,8 +200,8 @@ function loseTurnCallback() {
 		setting.gameState = true;
 
 		$(document).on('keyup', function(e) {
-				gameStart = setInterval( init , setting.frameSpeed);
-				$(this).off('keyup');
+			gameStart = setInterval( init , setting.frameSpeed);
+			$(this).off('keyup');
 		});
 
 
@@ -206,16 +209,7 @@ function loseTurnCallback() {
 }
 
 function loseGameCallback() {
-	$('.modal-message').text(setting.lostMessage);
-	setTimeout(function(){
-		$('.modal-overlay').show();
-		$('body').addClass('game-over');
-	}, 100);
-
-	$('.btn-play-again').on('click', function(e){
-		e.preventDefault();
-		location.reload();
-	});
+	modalPopup(setting.lostMessage, "Game Over !");
 }
 
 function initSpacebar() {
@@ -226,10 +220,32 @@ function initSpacebar() {
 
 			// Only allows one-time click on document load
 			$(this).off('keyup');
-
 		}
 	});
 } 
+
+function gameWon() {
+	clearInterval(gameStart);
+	$('.modal-box h3').after("<p class='modal-score'>Score : " + setting.currentScore + "</p>");
+	modalPopup(setting.wonMessage, "Well done !");
+	drawBall();
+	drawPaddle();
+}
+
+function modalPopup(message, header) {
+	$('.modal-message').text(message);
+	$('.modal-box h3').text(header);
+
+	setTimeout(function(){
+		$('.modal-overlay').show();
+		$('body').addClass('game-over');
+	}, 100);
+
+	$('.btn-play-again').on('click', function(e){
+		e.preventDefault();
+		location.reload();
+	});
+}
 
 function init() {
 	if( setting.gameState == true ) {
@@ -246,6 +262,10 @@ function init() {
 		loseTurnCallback();
 	} else if( setting.gameState == false && setting.deathNumber == setting.deathTotal ) {
 		loseGameCallback();
+	}
+
+	if( totalBricks == 0 ) {
+		gameWon();
 	}
 }
 
