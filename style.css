@@ -18,7 +18,12 @@ body {
 }
 #breakout-game {
 	background: #eee;
-
+}
+@media screen and (max-width: 460px) {
+	#breakout-game {
+		max-width: 100% !important;
+		width: 100% !important;
+	}
 }
 .modal-overlay {
 	position: fixed;

@@ -178,6 +178,11 @@ function boundaryCollision() {
 		}
 	}
 
+	if( y + setting.ballRadius > canvasHeight + 15) {
+		clearInterval(gameStart);
+		setting.gameState = false;
+	}
+
 	if( x + setting.ballRadius >= canvasWidth || x - setting.ballRadius <= 0) {
 		dx = -dx;
 	}
@@ -202,6 +207,7 @@ function loseTurnCallback() {
 		$(document).on('keyup', function(e) {
 			gameStart = setInterval( init , setting.frameSpeed);
 			$(this).off('keyup');
+			$('.instr-footer small').text('');
 		});
 
 
