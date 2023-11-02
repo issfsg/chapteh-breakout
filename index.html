@@ -3,48 +3,115 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Chapteh Challenge</title>
-	<!-- <link rel="stylesheet" href="css/style.css"> -->
+	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <style>
+        body {
+            font-family: 'Inter var', sans-serif;;
+        }
         img {
             position: absolute;
         
         }
         
         div#container {
-            width: 200px;
-            height: 300px;
+            width: 400px;
+            height: 600px;
             position: relative;
             border-style: solid;
+            top: 20px;
+        }
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        
+        /* Modal Content/Box */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+        }
+        
+        /* The Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #scoreboard {
+            font-weight: bolder;
         }
     </style>
 </head>
 
 <body>
-    <div id="container">
-        <img id="chapteh" width="27" height="36" src="chapteh.png" alt="Chapteh" />
+    <div style="width: 200px;">
+        <div style="float:right" id="scoreboard">
+            0
+        </div>
     </div>
+    <div id="container">
+        <img id="chapteh" width="54" height="72" src="chapteh.png" alt="Chapteh" />
+    </div>
+
+
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h1>GAME OVER!</h1>
+          <!-- <p>Oh no! Try again!</p> -->
+        </div>
+      
+      </div>
+
     <script lang="js">
         const container = document.getElementById('container');
 
-        //function target()
+        const scoreboard = document.getElementById('scoreboard');
+        
+        const chapteh = document.getElementById('chapteh');
 
         const settings = {
             canvas: {
-                width: 200,
-                height: 300
+                width: 400,
+                height: 600
             },
             image: {
-                width: 27,
-                height: 36
+                width: 54,
+                height: 72
             },
             gravity: -0.2,
             target: {
                 width: 20,
-                height: 10
+                height: 10,
+                color: '#f6cefc'
             },
             numTargets: {
-                numCols: 10,
-                numRows: 20
+                numCols: 20,
+                numRows: 40
             }
         }
 
@@ -65,31 +132,77 @@
             }
         }
 
-        
+
+        var obj;
+        var targets;
+        var targetElems;
+
+        function setup() {
+            for(i in targetElems) {
+                for(j in targetElems[i]) {
+                    if(!targets[i][j].deleted) targetElems[i][j].delete();
+                }
+            }
 
 
-        const obj = {
-            x: (settings.canvas.width-settings.image.width) / 2,
-            y: 0,
-            theta: 0,
-            vx: 0,
-            vy: 0,
-            omega: 0,
-            dirn: 1,
-            gravity: settings.gravity
+            obj = {
+                x: (settings.canvas.width-settings.image.width) / 2,
+                y: 0,
+                theta: 0,
+                vx: 0,
+                vy: 0,
+                omega: 0,
+                dirn: 1,
+                gravity: settings.gravity,
+                score: 0
+            };
+
+            targets = [];
+
+            for(let i = 0; i < settings.numTargets.numRows; i++) {
+                targets.push([])
+                for(let j = 0; j < settings.numTargets.numCols; j++) {
+                    targets[i].push({
+                        x: j*settings.target.width,
+                        y: i*settings.target.height
+                    })
+                }
+            }
+
+            targetElems = []
+            for(let i = 0; i < settings.numTargets.numRows; i++) {
+                targetElems.push([])
+                for(let j = 0; j < settings.numTargets.numCols; j++) {
+                    targetElems[i].push(new target(targets[i][j].x, targets[i][j].y, settings.target.color));
+                    targets[i][j].elem = targetElems[i][j]
+                }
+            }
+
+
         }
 
-        const targets = []
+        const modal = document.getElementById("myModal");
 
-        for(let i = 0; i < settings.numTargets.numRows; i++) {
-            targets.push([])
-            for(let j = 0; j < settings.numTargets.numCols; j++) {
-                targets[i].push({
-                    x: j*settings.target.width,
-                    y: i*settings.target.height
-                })
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        var modalOpen = false;
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+            modalOpen = false;
+            setup()
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+              modal.style.display = "none";
+              modalOpen = false;
+              setup()
             }
         }
+
 
         function css(element, style) {
             for (const property in style)
@@ -105,10 +218,17 @@
         }
 
         function update() {
-            obj.vy += obj.gravity;
+            if(obj.y > 0) obj.vy += obj.gravity;
             obj.x += obj.vx;
             obj.y += obj.vy;
+
+            if(obj.vy < 0 && obj.y <= 0) {
+                modal.style.display = "block";
+                modalOpen = true;
+            }
+
             obj.theta += obj.omega;
+
             if (obj.y < 0) {
                 obj.y = 0;
                 obj.vy = 0;
@@ -117,6 +237,7 @@
                 obj.vx = 0;
                 obj.dirn = -obj.dirn;
             }
+            
 
             if(obj.x < 0) {
                 obj.x = 0;
@@ -170,6 +291,8 @@
                     )) {
                         curTarget.elem.delete();
                         curTarget.deleted = true;
+                        obj.score++;
+                        scoreboard.innerText = obj.score;
                     }
                     
                 }
@@ -180,30 +303,22 @@
 
         // event = keyup or keydown
         document.addEventListener('keyup', event => {
-            if (event.code === 'Space') {
+            if (event.code === 'Space' && !modalOpen) {
                 obj.gravity = settings.gravity;
-                obj.vy = 5;
+                obj.vy = 10;
                 obj.omega = 10 * obj.dirn;
                 obj.vx = 2 * obj.dirn;
             }
         })
+        
+        setup();
 
         window.onload = () => {
-            const chapteh = document.getElementById('chapteh');
-            transform(chapteh);
-
-            const targetElems = []
-            for(let i = 0; i < settings.numTargets.numRows; i++) {
-                targetElems.push([])
-                for(let j = 0; j < settings.numTargets.numCols; j++) {
-                    targetElems[i].push(new target(targets[i][j].x, targets[i][j].y, 'yellow'));
-                    targets[i][j].elem = targetElems[i][j]
-                }
-            }
+            
 
             setInterval(() => {
-                update();
                 transform(chapteh);
+                update();
             }, 1);
         }
         
