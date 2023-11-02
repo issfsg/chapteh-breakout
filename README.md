@@ -1,5 +1,5 @@
-# Breakout-JS
-A simple breakout game made with HTML5 Canvas and Javascript (jQuery). Game logic is within the game.js file.
+# Chapteh-powered Breakout Game
 
-Demo is available at: [http://ikramzidane.github.io/breakout-JS/](http://ikramzidane.github.io/breakout-JS/)
+![](chapteh_poster.png)
 
+A very simple game for all those who know what Chapteh is!
