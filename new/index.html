@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Chapteh Challenge</title>
+	<!-- <link rel="stylesheet" href="css/style.css"> -->
+    <style>
+        img {
+            position: absolute;
+        
+        }
+        
+        div#container {
+            width: 200px;
+            height: 300px;
+            position: relative;
+            border-style: solid;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <img id="chapteh" width="27" height="36" src="chapteh.png" alt="Chapteh" />
+    </div>
+    <script lang="js">
+        const container = document.getElementById('container');
+
+        //function target()
+
+        const settings = {
+            canvas: {
+                width: 200,
+                height: 300
+            },
+            image: {
+                width: 27,
+                height: 36
+            },
+            gravity: -0.2,
+            target: {
+                width: 20,
+                height: 10
+            },
+            numTargets: {
+                numCols: 10,
+                numRows: 20
+            }
+        }
+
+        function target(x, y, color) {
+            this.elem = document.createElement('div');
+            this.elem.style.backgroundColor = color;
+            this.elem.style.width = settings.target.width + 'px';
+            this.elem.style.height = settings.target.height + 'px';
+            this.elem.style.position = 'absolute';
+            this.elem.style.left = x + 'px';
+            this.elem.style.top = y + 'px';
+            this.elem.style.borderStyle = '1px solid black';
+
+            container.appendChild(this.elem);
+
+            this.delete = () => {
+                container.removeChild(this.elem);
+            }
+        }
+
+        
+
+
+        const obj = {
+            x: (settings.canvas.width-settings.image.width) / 2,
+            y: 0,
+            theta: 0,
+            vx: 0,
+            vy: 0,
+            omega: 0,
+            dirn: 1,
+            gravity: settings.gravity
+        }
+
+        const targets = []
+
+        for(let i = 0; i < settings.numTargets.numRows; i++) {
+            targets.push([])
+            for(let j = 0; j < settings.numTargets.numCols; j++) {
+                targets[i].push({
+                    x: j*settings.target.width,
+                    y: i*settings.target.height
+                })
+            }
+        }
+
+        function css(element, style) {
+            for (const property in style)
+                element.style[property] = style[property];
+        }
+
+        function transform(element) {
+            css(element, {
+                left: `${obj.x}px`,
+                bottom: `${obj.y}px`,
+                transform: `rotate(${obj.theta}deg)`
+            });
+        }
+
+        function update() {
+            obj.vy += obj.gravity;
+            obj.x += obj.vx;
+            obj.y += obj.vy;
+            obj.theta += obj.omega;
+            if (obj.y < 0) {
+                obj.y = 0;
+                obj.vy = 0;
+                obj.gravity = 0;
+                obj.omega = 0;
+                obj.vx = 0;
+                obj.dirn = -obj.dirn;
+            }
+
+            if(obj.x < 0) {
+                obj.x = 0;
+                obj.dirn = -obj.dirn;
+            }
+
+            if(obj.x > (settings.canvas.width-settings.image.width)) {
+                obj.x = settings.canvas.width-settings.image.width;
+                obj.dirn = -obj.dirn;
+            }
+
+            if(obj.y > (settings.canvas.height-settings.image.height)) {
+                obj.y = settings.canvas.height-settings.image.height;
+                obj.vy = 0;
+                obj.dirn = -obj.dirn;
+            }
+
+            let domains = {
+                x: {
+                    min: obj.x,
+                    max: obj.x + settings.image.width
+                },
+                y: {
+                    min: obj.y,
+                    max: obj.y + settings.image.height
+                },
+            }
+
+            
+
+            for(let i = 0; i < settings.numTargets.numRows; i++) {
+                for(let j = 0; j < settings.numTargets.numCols; j++) {
+                    let curTarget = targets[i][j];
+                    if(curTarget.deleted) continue;
+                    let targetDomains = {
+                        x: {
+                            min: curTarget.x,
+                            max: curTarget.x + settings.target.width
+                        },
+                        y: {
+                            min: settings.canvas.height - curTarget.y - settings.target.height,
+                            max: settings.canvas.height - curTarget.y
+                        },
+                    }
+
+                    if (!(
+                        domains.y.max < targetDomains.y.min ||
+                        domains.y.min > targetDomains.y.max ||
+                        domains.x.max < targetDomains.x.min ||
+                        domains.x.min > targetDomains.x.max
+                    )) {
+                        curTarget.elem.delete();
+                        curTarget.deleted = true;
+                    }
+                    
+                }
+            }
+
+            //if
+        }
+
+        // event = keyup or keydown
+        document.addEventListener('keyup', event => {
+            if (event.code === 'Space') {
+                obj.gravity = settings.gravity;
+                obj.vy = 5;
+                obj.omega = 10 * obj.dirn;
+                obj.vx = 2 * obj.dirn;
+            }
+        })
+
+        window.onload = () => {
+            const chapteh = document.getElementById('chapteh');
+            transform(chapteh);
+
+            const targetElems = []
+            for(let i = 0; i < settings.numTargets.numRows; i++) {
+                targetElems.push([])
+                for(let j = 0; j < settings.numTargets.numCols; j++) {
+                    targetElems[i].push(new target(targets[i][j].x, targets[i][j].y, 'yellow'));
+                    targets[i][j].elem = targetElems[i][j]
+                }
+            }
+
+            setInterval(() => {
+                update();
+                transform(chapteh);
+            }, 1);
+        }
+        
+
+
+    </script>
+
+</body>
+
+
+</html>
