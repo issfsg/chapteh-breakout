@@ -7,112 +7,38 @@
 
 	<title>Chapteh Challenge</title>
 	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-    
-    <style>
-        body {
-            font-family: 'Inter var', sans-serif;;
-        }
-        img {
-            position: absolute;
-        
-        }
-        
-        div#container {
-            width: 360px;
-            height: 600px;
-            position: relative;
-            border-style: solid;
-            border-top: solid red;
-            top: 5px;
-        }
-
-        /* The Modal (background) */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-        }
-        
-        /* Modal Content/Box */
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto; /* 15% from the top and centered */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 60%; /* Could be more or less, depending on screen size */
-        }
-        
-        /* The Close Button */
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        #highScoreContainer {
-            font-weight: bolder;
-        }
-
-        .button {
-            background-color: #4CAF50; /* Green */
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-          }
-    </style>
+	<link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <div style="display: flex; flex-direction: column; margin: auto; justify-content: center; align-items: center;">
-        <div style="display: flex; justify-content: center; align-items: center;">
-        <p style="width: 180px; margin: 0px; text-align: center; flex-grow: 8;" id="scoreboard">
-            0
-        </p>
-        <p style="width: 180px; margin: 0px; text-align: center; flex-grow: 1" id="highScoreContainer">
-            High Score: <span id="highScore">0</span>
-        </p>
+    <div id="view">
+        <div id="topbar">
+            <p id="scoreboard">0</p>
+            <p id="highScoreContainer">High Score: <span id="highScore">0</span></p>
         </div>
-    <div id="container">
-        <img id="chapteh" width="54" height="72" src="chapteh.png" alt="Chapteh" />
-    </div>
+        <div id="container" style="border-top: solid red">
+            <img id="chapteh" width="54" height="72" src="chapteh.png" alt="Chapteh" />
+        </div>
 
-        <button class="button" id="spacebar"
-            style="width: 360px; margin-top: 30px;">
-            Click
-        </button>
+        <button class="button" id="spacebar">Click</button>
 
     </div>
 
 
-    <div id="myModal" class="modal">
+    <div id="gameover" class="modal">
 
         <!-- Modal content -->
         <div class="modal-content">
-          <span class="close">&times;</span>
+          <span id="close">&times;</span>
           <h1>GAME OVER!</h1>
           <p>You scored <span id="score">0</span> points! <span id="commentary"></span></p>
         </div>
       
       </div>
+
+      <script src="js/util.js"></script>
+      <script src="js/elements.js"></script>
+      <script src="js/kinematics.js"></script>
 
     <script lang="js">
         if((localStorage.getItem("highScore") || 0) < 360) {
@@ -120,163 +46,86 @@
             window.location.replace("index.html");
         }
 
-
-        
-
-        const container = document.getElementById('container');
-
+        // Top Bar
         const scoreboard = document.getElementById('scoreboard');
         const highScore = document.getElementById('highScore');
-        
+
+        // Container and Internal Elements
+        const container = document.getElementById('container');
         const chapteh = document.getElementById('chapteh');
 
-        function setCookie(cname, cvalue, exdays) {
-            const d = new Date();
-            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-            let expires = "expires="+d.toUTCString();
-            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-          }
-          
-          function getCookie(cname) {
-            let name = cname + "=";
-            let ca = document.cookie.split(';');
-            for(let i = 0; i < ca.length; i++) {
-              let c = ca[i];
-              while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-              }
-              if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-              }
-            }
-            return "";
-          }
-          
+        // Bottom Bar
+        const spacebar = document.getElementById("spacebar");
 
-        const settings = {
-            canvas: {
-                width: 360,
-                height: 600
-            },
-            image: {
-                width: 54,
-                height: 72
-            },
-            gravity: -0.2,
-            target: {
-                width: 20,
-                height: 10,
-                color: '#f6cefc'
-            },
-            numTargets: {
-                numCols: 18,
-                numRows: 20
-            },
-            topOffset: 20
-        }
-
-        function target(x, y, color) {
-            this.elem = document.createElement('div');
-            this.elem.style.backgroundColor = color;
-            this.elem.style.width = settings.target.width + 'px';
-            this.elem.style.height = settings.target.height + 'px';
-            this.elem.style.position = 'absolute';
-            this.elem.style.left = x + 'px';
-            this.elem.style.top = y + 'px';
-            this.elem.style.borderStyle = '1px solid black';
-
-            container.appendChild(this.elem);
-
-            this.delete = () => {
-                container.removeChild(this.elem);
-            }
-        }
+        // Modal Items
+        const modal = document.getElementById("gameover");
+        const commentary = document.getElementById("commentary");
+        const level2btn = document.getElementById("level2btn");
+        const score = document.getElementById("score");
+        var closeBtn = document.getElementById("close");
 
 
         var obj;
-        var targets;
-        var targetElems;
+        var targets = [];
+        var modalOpen = false;
+        
+          
 
-        function setup() {
-            for(i in targetElems) {
-                for(j in targetElems[i]) {
-                    if(!targets[i][j].deleted) targetElems[i][j].delete();
-                }
-            }
-
-
-            obj = {
-                x: (settings.canvas.width-settings.image.width) / 2,
-                y: 0,
-                theta: 0,
-                vx: 0,
-                vy: 0,
-                omega: 0,
-                dirn: 1,
-                gravity: settings.gravity,
-                score: 0
-            };
-
-            targets = [];
-
-            for(let i = 0; i < settings.numTargets.numRows; i++) {
-                targets.push([])
-                for(let j = 0; j < settings.numTargets.numCols; j++) {
-                    targets[i].push({
-                        x: j*settings.target.width,
-                        y: (i+settings.topOffset)*settings.target.height
-                    })
-                }
-            }
-
-            targetElems = []
-            for(let i = 0; i < settings.numTargets.numRows; i++) {
-                targetElems.push([])
-                for(let j = 0; j < settings.numTargets.numCols; j++) {
-                    targetElems[i].push(new target(targets[i][j].x, targets[i][j].y, settings.target.color));
-                    targets[i][j].elem = targetElems[i][j]
-                }
-            }
-
-            scoreboard.innerText = obj.score;
-            highScore.innerText = localStorage.getItem("highScore2") || 0;
+        const settings = {
+            canvas: { width: 360, height: 600 },
+            image: { width: 54, height: 72 },
+            gravity: -0.2,
+            target: { width: 20, height: 10, color: '#f6cefc' },
+            numTargets: {
+                numCols: 18, numRows: 20,
+                total() { return settings.numTargets.numCols * settings.numTargets.numRows }
+            },
+            topOffset: 20,
+            leftOffset:0,
+            highScoreName: 'highScore2',
+            defaultObj: () => ({
+                    x: (settings.canvas.width-settings.image.width) / 2, y: 0,
+                    theta: 0, vx: 0, vy: 0, omega: 0, dirn: 1,
+                    gravity: settings.gravity, score: 0
+            })
         }
 
-        const modal = document.getElementById("myModal");
+        function setup() {
+            obj = settings.defaultObj();
 
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
+            for(i in targets) targets[i].forEach(t => t.delete());
 
-        var modalOpen = false;
+            targets = populateTargets(
+                settings.numTargets.numRows, settings.numTargets.numCols, 
+                settings.target.width, settings.target.height,
+                settings.topOffset, settings.leftOffset, settings.target.color,
+                container
+            );
 
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
+            scoreboard.innerText = obj.score;
+            highScore.innerText = getHighScore(settings.highScoreName);
+        }
+
+        function openModal() {
+            score.innerText = obj.score;
+            commentary.innerText = comments(obj.score, settings.numTargets.total())
+
+            modal.style.display = "block";
+            modalOpen = true;
+        }
+
+        function closeModal() {
             modal.style.display = "none";
             modalOpen = false;
             setup()
         }
 
+        closeBtn.onclick = closeModal;
+
         window.onclick = function(event) {
-            if (event.target == modal) {
-              modal.style.display = "none";
-              modalOpen = false;
-              setup()
-            }
+            if (event.target == modal) closeModal();
         }
 
-
-        function css(element, style) {
-            for (const property in style)
-                element.style[property] = style[property];
-        }
-
-        function transform(element) {
-            css(element, {
-                left: `${obj.x}px`,
-                bottom: `${obj.y}px`,
-                transform: `rotate(${obj.theta}deg)`
-            });
-        }
 
         function update() {
             if(obj.y > 0) obj.vy += obj.gravity;
@@ -284,23 +133,8 @@
             obj.y += obj.vy;
 
             if((obj.vy < 0 && obj.y <= 0) || (obj.vy > 0 && obj.y >= (settings.canvas.height-settings.image.height))) {
-                let highScore = localStorage.getItem('highScore2')
-                localStorage.setItem('highScore2', ((!highScore) || highScore < obj.score) ? obj.score : highScore);
-
-                console.log("highScore updated with score "+obj.score);
-
-                document.getElementById("score").innerText = obj.score;
-
-                const commentary = document.getElementById("commentary")
-
-                if(obj.score < (settings.numTargets.numCols*settings.numTargets.numRows) / 2) {
-                    commentary.innerText = "You can do better!"
-                } else if(obj.score < (settings.numTargets.numCols*settings.numTargets.numRows)) {
-                    commentary.innerText = "Come on, you're almost there!"
-                } else commentary.innerText = "You did it! Great job!"
-
-                modal.style.display = "block";
-                modalOpen = true;
+                updateHighScore(settings.highScoreName, obj.score);
+                openModal();
             }
 
             obj.theta += obj.omega;
@@ -313,7 +147,15 @@
                 obj.vx = 0;
                 obj.dirn = -obj.dirn;
             }
-            
+
+            if(obj.y > (settings.canvas.height-settings.image.height)) {
+                obj.y = settings.canvas.height-settings.image.height;
+                obj.vy = 0;
+                obj.dirn = -obj.dirn;
+                obj.gravity = 0;
+                obj.omega = 0;
+                obj.vx = 0;
+            }
 
             if(obj.x < 0) {
                 obj.x = 0;
@@ -325,91 +167,35 @@
                 obj.dirn = -obj.dirn;
             }
 
-            if(obj.y > (settings.canvas.height-settings.image.height)) {
-                obj.y = settings.canvas.height-settings.image.height;
-                obj.vy = 0;
-                obj.dirn = -obj.dirn;
-                obj.gravity = 0;
-                obj.omega = 0;
-                obj.vx = 0;
-            }
-
             let domains = {
-                x: {
-                    min: obj.x,
-                    max: obj.x + settings.image.width
-                },
-                y: {
-                    min: obj.y,
-                    max: obj.y + settings.image.height
-                },
+                x: { min: obj.x, max: obj.x + settings.image.width },
+                y: { min: obj.y, max: obj.y + settings.image.height },
             }
-
-            
 
             for(let i = 0; i < settings.numTargets.numRows; i++) {
-                for(let j = 0; j < settings.numTargets.numCols; j++) {
-                    let curTarget = targets[i][j];
-                    if(curTarget.deleted) continue;
-                    let targetDomains = {
-                        x: {
-                            min: curTarget.x,
-                            max: curTarget.x + settings.target.width
-                        },
-                        y: {
-                            min: settings.canvas.height - curTarget.y - settings.target.height,
-                            max: settings.canvas.height - curTarget.y
-                        },
+                targets[i].forEach((t) => {
+                    if(t.isTouched(domains)) {
+                        t.delete();
+                        scoreboard.innerText = ++obj.score;
                     }
-
-                    if (!(
-                        domains.y.max < targetDomains.y.min ||
-                        domains.y.min > targetDomains.y.max ||
-                        domains.x.max < targetDomains.x.min ||
-                        domains.x.min > targetDomains.x.max
-                    )) {
-                        curTarget.elem.delete();
-                        curTarget.deleted = true;
-                        obj.score++;
-                        scoreboard.innerText = obj.score;
-                    }
-                    
-                }
+                })
             }
-
-            //if
         }
 
-        // event = keyup or keydown
         document.addEventListener('keyup', event => {
-            if (event.code === 'Space' && !modalOpen) {
-                obj.gravity = settings.gravity;
-                obj.vy = 10;
-                obj.dirn = -obj.dirn;
-                obj.omega = 10 * obj.dirn;
-                obj.vx = 2 * obj.dirn;
-            } else if (event.code === "Space") {
-                modal.style.display = "none"
-                modalOpen = false;
-                setup(); 
+            if(event.code === 'Space') {
+                if(modalOpen) closeModal();
+                else jump(obj);
             }
         })
 
-        document.getElementById("spacebar").onclick = () => {
-            if (!modalOpen) {
-                obj.gravity = settings.gravity;
-                obj.vy = 10;
-                obj.dirn = -obj.dirn;
-                obj.omega = 10 * obj.dirn;
-                obj.vx = 2 * obj.dirn;
-            }
+        spacebar.onclick = () => {
+            if (!modalOpen) jump(obj)
         }
         
         setup();
 
         window.onload = () => {
-            
-
             setInterval(() => {
                 transform(chapteh);
                 update();
