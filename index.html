@@ -261,9 +261,6 @@
             if(obj.vy < 0 && obj.y <= 0) {
                 let highScore = localStorage.getItem('highScore')
                 localStorage.setItem('highScore', ((!highScore) || highScore < obj.score) ? obj.score : highScore);
-
-                console.log("highScore updated with score "+obj.score);
-
                 document.getElementById("score").innerText = obj.score;
 
                 const commentary = document.getElementById("commentary")
@@ -271,7 +268,7 @@
 
                 if(obj.score < (settings.numTargets.numCols*settings.numTargets.numRows) / 2) {
                     commentary.innerText = "You can do better!"
-                    btn.style.display = 'none'
+                    btn.style.display = localStorage.getItem('highScore') >= (settings.numTargets.numCols*settings.numTargets.numRows) / 2 ? 'block' : 'none'
                 } else if(obj.score < (settings.numTargets.numCols*settings.numTargets.numRows)) {
                     commentary.innerText = "Come on, you're almost there!"
                     btn.style.display = 'block'
