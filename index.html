@@ -76,6 +76,12 @@
             font-size: 16px;
             margin: 4px 2px;
             cursor: pointer;
+            text-decoration: none;
+          }
+
+          a#level2btn {
+            margin: 10px 10px;
+            display: block;
           }
     </style>
 </head>
@@ -109,6 +115,7 @@
           <span class="close">&times;</span>
           <h1>GAME OVER!</h1>
           <p>You scored <span id="score">0</span> points! <span id="commentary"></span></p>
+          <a href="level2.html" class="button" id="level2btn">Proceed to Level 2</a>
         </div>
       
       </div>
@@ -120,28 +127,6 @@
         const highScore = document.getElementById('highScore');
         
         const chapteh = document.getElementById('chapteh');
-
-        function setCookie(cname, cvalue, exdays) {
-            const d = new Date();
-            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-            let expires = "expires="+d.toUTCString();
-            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-          }
-          
-          function getCookie(cname) {
-            let name = cname + "=";
-            let ca = document.cookie.split(';');
-            for(let i = 0; i < ca.length; i++) {
-              let c = ca[i];
-              while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-              }
-              if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-              }
-            }
-            return "";
-          }
           
 
         const settings = {
@@ -282,12 +267,18 @@
                 document.getElementById("score").innerText = obj.score;
 
                 const commentary = document.getElementById("commentary")
+                const btn = document.getElementById("level2btn")
 
                 if(obj.score < (settings.numTargets.numCols*settings.numTargets.numRows) / 2) {
                     commentary.innerText = "You can do better!"
+                    btn.style.display = 'none'
                 } else if(obj.score < (settings.numTargets.numCols*settings.numTargets.numRows)) {
                     commentary.innerText = "Come on, you're almost there!"
-                } else commentary.innerText = "You did it! Great job!"
+                    btn.style.display = 'block'
+                } else {
+                    commentary.innerText = "You did it! Great job!"
+                    btn.style.display = 'block'
+            }
 
                 modal.style.display = "block";
                 modalOpen = true;
