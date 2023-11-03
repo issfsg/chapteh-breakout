@@ -41,7 +41,7 @@
             margin: 15% auto; /* 15% from the top and centered */
             padding: 20px;
             border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
+            width: 40%; /* Could be more or less, depending on screen size */
         }
         
         /* The Close Button */
@@ -62,13 +62,30 @@
         #scoreboard {
             font-weight: bolder;
         }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+          }
     </style>
 </head>
 
 <body>
-    <div style="width: 200px;">
-        <div style="float:right" id="scoreboard">
+    <div style="width: 200px; display:flex;">
+        <p style="flex-grow: 8; margin: auto; text-align: center;" id="scoreboard">
             0
+        </p>
+
+        <div id="spacebar">
+            <button class="button">Hello</button>
         </div>
     </div>
     <div id="container">
@@ -82,7 +99,7 @@
         <div class="modal-content">
           <span class="close">&times;</span>
           <h1>GAME OVER!</h1>
-          <!-- <p>Oh no! Try again!</p> -->
+          <p>You scored <span id="score">0</span> points! <span id="commentary"></span></p>
         </div>
       
       </div>
@@ -223,6 +240,16 @@
             obj.y += obj.vy;
 
             if(obj.vy < 0 && obj.y <= 0) {
+                document.getElementById("score").innerText = obj.score;
+
+                const commentary = document.getElementById("commentary")
+
+                if(obj.score < (settings.numTargets.numCols*settings.numTargets.numRows) / 2) {
+                    commentary.innerText = "You can do better!"
+                } else if(obj.score < (settings.numTargets.numCols*settings.numTargets.numRows)) {
+                    commentary.innerText = "Come on, almost there"
+                } else commentary.innerText = "You did it! Great job!"
+
                 modal.style.display = "block";
                 modalOpen = true;
             }
@@ -306,6 +333,7 @@
             if (event.code === 'Space' && !modalOpen) {
                 obj.gravity = settings.gravity;
                 obj.vy = 10;
+                obj.dirn = -obj.dirn;
                 obj.omega = 10 * obj.dirn;
                 obj.vx = 2 * obj.dirn;
             }
