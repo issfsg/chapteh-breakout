@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<title>Chapteh Challenge</title>
 	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    
     <style>
         body {
             font-family: 'Inter var', sans-serif;;
@@ -14,11 +18,11 @@
         }
         
         div#container {
-            width: 400px;
+            width: 360px;
             height: 600px;
             position: relative;
             border-style: solid;
-            top: 20px;
+            top: 5px;
         }
 
         /* The Modal (background) */
@@ -41,7 +45,7 @@
             margin: 15% auto; /* 15% from the top and centered */
             padding: 20px;
             border: 1px solid #888;
-            width: 40%; /* Could be more or less, depending on screen size */
+            width: 60%; /* Could be more or less, depending on screen size */
         }
         
         /* The Close Button */
@@ -69,8 +73,6 @@
             color: white;
             padding: 15px 32px;
             text-align: center;
-            text-decoration: none;
-            display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
             cursor: pointer;
@@ -79,17 +81,19 @@
 </head>
 
 <body>
-    <div style="width: 200px; display:flex;">
-        <p style="flex-grow: 8; margin: auto; text-align: center;" id="scoreboard">
+    <div style="display: flex; flex-direction: column; margin: auto; justify-content: center; align-items: center;">
+        <p style="width: 340px; margin: 0px; text-align: center;" id="scoreboard">
             0
         </p>
-
-        <div id="spacebar">
-            <button class="button">Hello</button>
-        </div>
-    </div>
     <div id="container">
         <img id="chapteh" width="54" height="72" src="chapteh.png" alt="Chapteh" />
+    </div>
+
+        <button class="button" id="spacebar"
+            style="width: 360px; margin-top: 30px;">
+            Click
+        </button>
+
     </div>
 
 
@@ -113,7 +117,7 @@
 
         const settings = {
             canvas: {
-                width: 400,
+                width: 360,
                 height: 600
             },
             image: {
@@ -127,7 +131,7 @@
                 color: '#f6cefc'
             },
             numTargets: {
-                numCols: 20,
+                numCols: 18,
                 numRows: 40
             }
         }
@@ -247,7 +251,7 @@
                 if(obj.score < (settings.numTargets.numCols*settings.numTargets.numRows) / 2) {
                     commentary.innerText = "You can do better!"
                 } else if(obj.score < (settings.numTargets.numCols*settings.numTargets.numRows)) {
-                    commentary.innerText = "Come on, almost there"
+                    commentary.innerText = "Come on, you're almost there!"
                 } else commentary.innerText = "You did it! Great job!"
 
                 modal.style.display = "block";
@@ -338,6 +342,16 @@
                 obj.vx = 2 * obj.dirn;
             }
         })
+
+        document.getElementById("spacebar").onclick = () => {
+            if (!modalOpen) {
+                obj.gravity = settings.gravity;
+                obj.vy = 10;
+                obj.dirn = -obj.dirn;
+                obj.omega = 10 * obj.dirn;
+                obj.vx = 2 * obj.dirn;
+            }
+        }
         
         setup();
 
