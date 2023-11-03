@@ -63,7 +63,7 @@
             cursor: pointer;
         }
 
-        #scoreboard {
+        #highScoreContainer {
             font-weight: bolder;
         }
 
@@ -82,9 +82,14 @@
 
 <body>
     <div style="display: flex; flex-direction: column; margin: auto; justify-content: center; align-items: center;">
-        <p style="width: 340px; margin: 0px; text-align: center;" id="scoreboard">
+        <div style="display: flex; justify-content: center; align-items: center;">
+        <p style="width: 180px; margin: 0px; text-align: center; flex-grow: 8;" id="scoreboard">
             0
         </p>
+        <p style="width: 180px; margin: 0px; text-align: center; flex-grow: 1" id="highScoreContainer">
+            High Score: <span id="highScore">0</span>
+        </p>
+        </div>
     <div id="container">
         <img id="chapteh" width="54" height="72" src="chapteh.png" alt="Chapteh" />
     </div>
@@ -112,8 +117,32 @@
         const container = document.getElementById('container');
 
         const scoreboard = document.getElementById('scoreboard');
+        const highScore = document.getElementById('highScore');
         
         const chapteh = document.getElementById('chapteh');
+
+        function setCookie(cname, cvalue, exdays) {
+            const d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            let expires = "expires="+d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+          }
+          
+          function getCookie(cname) {
+            let name = cname + "=";
+            let ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+              let c = ca[i];
+              while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+              }
+              if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+              }
+            }
+            return "";
+          }
+          
 
         const settings = {
             canvas: {
@@ -200,6 +229,7 @@
             }
 
             scoreboard.innerText = obj.score;
+            highScore.innerText = localStorage.getItem("highScore") || 0;
         }
 
         const modal = document.getElementById("myModal");
@@ -244,6 +274,11 @@
             obj.y += obj.vy;
 
             if(obj.vy < 0 && obj.y <= 0) {
+                let highScore = localStorage.getItem('highScore')
+                localStorage.setItem('highScore', ((!highScore) || highScore < obj.score) ? obj.score : highScore);
+
+                console.log("highScore updated with score "+obj.score);
+
                 document.getElementById("score").innerText = obj.score;
 
                 const commentary = document.getElementById("commentary")
@@ -340,6 +375,10 @@
                 obj.dirn = -obj.dirn;
                 obj.omega = 10 * obj.dirn;
                 obj.vx = 2 * obj.dirn;
+            } else if (event.code === "Space") {
+                modal.style.display = "none"
+                modalOpen = false;
+                setup(); 
             }
         })
 
