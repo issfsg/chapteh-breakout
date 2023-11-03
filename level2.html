@@ -115,6 +115,14 @@
       </div>
 
     <script lang="js">
+        if((localStorage.getItem("highScore") || 0) < 360) {
+            confirm("At least get 360 in Level 1!");
+            window.location.replace("index.html");
+        }
+
+
+        
+
         const container = document.getElementById('container');
 
         const scoreboard = document.getElementById('scoreboard');
