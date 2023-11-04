@@ -87,6 +87,13 @@ div#topbar {
     align-items: center;
 }
 
+div#buttonbar {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 p#scoreboard {
     width: 180px;
     margin: 0px;
@@ -104,4 +111,8 @@ p#highScoreContainer {
 button#spacebar {
     width: 360px;
     margin-top: 30px;
+}
+
+button.ctrlbtn {
+    width: 175px;
 }

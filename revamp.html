@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Chapteh Challenge</title>
+	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="view">
+        <div id="topbar">
+            <p id="scoreboard">0</p>
+            <p id="highScoreContainer">High Score: <span id="highScore">0</span></p>
+        </div>
+        <div id="container">
+            <img id="chapteh" width="54" height="72" src="chapteh.png" alt="Chapteh" />
+        </div>
+        <div id="buttonbar">
+            <button class="button ctrlbtn" id="leftbar">Left</button>
+            <button class="button ctrlbtn" id="rightbar">Right</button>
+        </div>
+    </div>
+
+    <div id="gameover" class="modal">
+        <div class="modal-content">
+            <span id="close">&times;</span>
+            <h1>GAME OVER!</h1>
+            <p>You scored <span id="score">0</span> points! <span id="commentary"></span></p>
+            <a href="level2.html" class="button" id="level2btn">Proceed to Level 2</a>
+        </div>
+    </div>
+
+    <script src="js/util.js"></script>
+    <script src="js/elements.js"></script>
+
+    <script lang="js">
+        // Top Bar
+        const scoreboard = document.getElementById('scoreboard');
+        const highScore = document.getElementById('highScore');
+
+        // Container and Internal Elements
+        const container = document.getElementById('container');
+        const chapteh = document.getElementById('chapteh');
+
+        // Bottom Bar
+        const leftbar = document.getElementById("leftbar");
+        const rightbar = document.getElementById("rightbar");
+
+        // Modal Items
+        const modal = document.getElementById("gameover");
+        const commentary = document.getElementById("commentary");
+        const level2btn = document.getElementById("level2btn");
+        const score = document.getElementById("score");
+        var closeBtn = document.getElementById("close");
+
+        // Variables
+        var obj;
+        var targets = [];
+        var modalOpen = false;
+
+        const settings = {
+            canvas: { width: 360, height: 600 },
+            image: { width: 54, height: 72 },
+            gravity: -0.2,
+            target: { width: 20, height: 10, color: '#f6cefc' },
+            numTargets: { 
+                numCols: 18, numRows: 40,
+                total() { return settings.numTargets.numCols * settings.numTargets.numRows }
+            },
+            topOffset: 0,
+            leftOffset: 0,
+            highScoreName: 'highScore',
+            defaultObj: () => ({
+                    x: (settings.canvas.width-settings.image.width) / 2, y: 0,
+                    theta: 0, vx: 0, vy: 0, omega: 0, dirn: 1,
+                    gravity: settings.gravity, score: 0
+            })
+        }
+
+        function setup() {
+            obj = settings.defaultObj();
+
+            for(i in targets) targets[i].forEach(t => t.delete());
+
+            targets = populateTargets(
+                settings.numTargets.numRows, settings.numTargets.numCols, 
+                settings.target.width, settings.target.height,
+                settings.topOffset, settings.leftOffset, settings.target.color,
+                container
+            );
+
+            scoreboard.innerText = obj.score;
+            highScore.innerText = getHighScore(settings.highScoreName);
+        }
+
+        function openModal() {
+            score.innerText = obj.score;
+            commentary.innerText = comments(obj.score, settings.numTargets.total())
+            level2btn.style.display = getHighScore(settings.highScoreName) >= settings.numTargets.total() / 2 ? 'block' : 'none'
+
+            modal.style.display = "block";
+            modalOpen = true;
+        }
+
+
+        function closeModal() {
+            modal.style.display = "none";
+            modalOpen = false;
+            setup()
+        }
+
+        closeBtn.onclick = closeModal;
+
+        window.onclick = function(event) {
+            if (event.target == modal) closeModal();
+        }
+
+        function jump(obj, dirn) {
+            obj.gravity = settings.gravity;
+            obj.dirn = dirn;
+            obj.vx = 2 * obj.dirn;
+            obj.vy = 10;
+            obj.omega = 10 * obj.dirn;
+        }
+
+        function update() {
+            if(obj.y > 0) obj.vy += obj.gravity;
+            obj.x += obj.vx;
+            obj.y += obj.vy;
+
+            if(obj.vy < 0 && obj.y <= 0) {
+                updateHighScore(settings.highScoreName, obj.score);
+                openModal();
+            }
+
+            obj.theta += obj.omega;
+
+            if (obj.y < 0) {
+                obj.y = 0;
+                obj.vx = 0;
+                obj.vy = 0;
+                obj.omega = 0;
+                obj.gravity = 0;
+                obj.dirn = -obj.dirn;
+            }
+
+            if(obj.y > (settings.canvas.height-settings.image.height)) {
+                obj.y = settings.canvas.height-settings.image.height;
+                obj.vy = 0;
+                obj.dirn = -obj.dirn;
+            }
+            
+            if(obj.x < 0) {
+                obj.x = 0;
+                obj.dirn = -obj.dirn;
+            }
+
+            else if(obj.x > (settings.canvas.width-settings.image.width)) {
+                obj.x = settings.canvas.width-settings.image.width;
+                obj.dirn = -obj.dirn;
+            }
+
+            let domains = {
+                x: { min: obj.x, max: obj.x + settings.image.width },
+                y: { min: obj.y, max: obj.y + settings.image.height },
+            }
+
+            for(let i = 0; i < settings.numTargets.numRows; i++) {
+                targets[i].forEach((t) => {
+                    if(t.isTouched(domains)) {
+                        t.delete();
+                        scoreboard.innerText = ++obj.score;
+                    }
+                })
+            }
+        }
+
+        document.addEventListener('keyup', e => {
+            e = e || window.event;
+
+            if(modalOpen) closeModal();
+            else {
+                if (e.keyCode == '38') {
+                    // up arrow
+                }
+                else if (e.keyCode == '40') {
+                    // down arrow
+                }
+                else if (e.keyCode == '37') {
+                    // left arrow
+                    jump(obj, -1);
+                    
+                }
+                else if (e.keyCode == '39') {
+                    // right arrow
+                    jump(obj, 1);
+                }
+            }
+        })
+
+        leftbar.onclick = () => {
+            if (!modalOpen) jump(obj, -1)
+        }
+
+        rightbar.onclick = () => {
+            if (!modalOpen) jump(obj, 1)
+        }
+        
+        setup();
+
+        window.onload = () => {
+            setInterval(() => {
+                transform(chapteh);
+                update();
+            }, 1);
+        }
+    </script>
+</body>
+</html>
