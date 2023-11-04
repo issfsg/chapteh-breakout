@@ -2,15 +2,11 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
 	<title>Chapteh Challenge</title>
 	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 	<link rel="stylesheet" href="css/style.css">
-    
 </head>
-
 <body>
     <div id="view">
         <div id="topbar">
@@ -20,20 +16,16 @@
         <div id="container">
             <img id="chapteh" width="54" height="72" src="chapteh.png" alt="Chapteh" />
         </div>
-
         <button class="button" id="spacebar">Click</button>
-
     </div>
-
 
     <div id="gameover" class="modal">
         <div class="modal-content">
-          <span id="close">&times;</span>
-          <h1>GAME OVER!</h1>
-          <p>You scored <span id="score">0</span> points! <span id="commentary"></span></p>
-          <a href="level2.html" class="button" id="level2btn">Proceed to Level 2</a>
+            <span id="close">&times;</span>
+            <h1>GAME OVER!</h1>
+            <p>You scored <span id="score">0</span> points! <span id="commentary"></span></p>
+            <a href="level2.html" class="button" id="level2btn">Proceed to Level 2</a>
         </div>
-      
     </div>
 
     <script src="js/util.js"></script>
@@ -59,8 +51,10 @@
         const score = document.getElementById("score");
         var closeBtn = document.getElementById("close");
 
+        // Variables
         var obj;
-        var targets;
+        var targets = [];
+        var modalOpen = false;
 
         const settings = {
             canvas: { width: 360, height: 600 },
@@ -132,7 +126,6 @@
             obj.theta += obj.omega;
 
             if (obj.y < 0) {
-                // x y theta vx vy omega dirn gravity
                 obj.y = 0;
                 obj.vx = 0;
                 obj.vy = 0;
@@ -191,12 +184,6 @@
                 update();
             }, 1);
         }
-        
-
-
     </script>
-
 </body>
-
-
 </html>

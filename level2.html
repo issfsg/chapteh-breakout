@@ -2,14 +2,11 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
 	<title>Chapteh Challenge</title>
 	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 	<link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
     <div id="view">
         <div id="topbar">
@@ -19,26 +16,20 @@
         <div id="container" style="border-top: solid red">
             <img id="chapteh" width="54" height="72" src="chapteh.png" alt="Chapteh" />
         </div>
-
         <button class="button" id="spacebar">Click</button>
-
     </div>
 
-
     <div id="gameover" class="modal">
-
-        <!-- Modal content -->
         <div class="modal-content">
-          <span id="close">&times;</span>
-          <h1>GAME OVER!</h1>
-          <p>You scored <span id="score">0</span> points! <span id="commentary"></span></p>
+            <span id="close">&times;</span>
+            <h1>GAME OVER!</h1>
+            <p>You scored <span id="score">0</span> points! <span id="commentary"></span></p>
         </div>
-      
-      </div>
+    </div>
 
-      <script src="js/util.js"></script>
-      <script src="js/elements.js"></script>
-      <script src="js/kinematics.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/elements.js"></script>
+    <script src="js/kinematics.js"></script>
 
     <script lang="js">
         if((localStorage.getItem("highScore") || 0) < 360) {
@@ -64,12 +55,10 @@
         const score = document.getElementById("score");
         var closeBtn = document.getElementById("close");
 
-
+        // Variables
         var obj;
         var targets = [];
-        var modalOpen = false;
-        
-          
+        var modalOpen = false;          
 
         const settings = {
             canvas: { width: 360, height: 600 },
@@ -81,7 +70,7 @@
                 total() { return settings.numTargets.numCols * settings.numTargets.numRows }
             },
             topOffset: 20,
-            leftOffset:0,
+            leftOffset: 0,
             highScoreName: 'highScore2',
             defaultObj: () => ({
                     x: (settings.canvas.width-settings.image.width) / 2, y: 0,
@@ -201,12 +190,6 @@
                 update();
             }, 1);
         }
-        
-
-
     </script>
-
 </body>
-
-
 </html>
